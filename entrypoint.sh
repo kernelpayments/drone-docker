@@ -34,6 +34,7 @@ echo Pushing eu.gcr.io/kernel-prod/$DRONE_REPO_NAME:$DRONE_COMMIT_SHA ...
 docker push eu.gcr.io/kernel-prod/$DRONE_REPO_NAME:$DRONE_COMMIT_SHA
 
 if [ "$PLUGIN_TAG_LATEST" = true ] ; then
+    echo Pushing eu.gcr.io/kernel-prod/$DRONE_REPO_NAME:latest ...
     docker tag eu.gcr.io/kernel-prod/$DRONE_REPO_NAME:$DRONE_COMMIT_SHA eu.gcr.io/kernel-prod/$DRONE_REPO_NAME:latest
     docker push eu.gcr.io/kernel-prod/$DRONE_REPO_NAME:latest
 fi
