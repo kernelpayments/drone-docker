@@ -1,0 +1,6 @@
+pipeline:
+  build:
+    image: eu.gcr.io/kernel-prod/drone-docker
+    tag_latest: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
