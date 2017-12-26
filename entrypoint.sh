@@ -27,14 +27,28 @@ cat > ~/.docker/config.json <<EOF
 }
 EOF
 
-echo Building...
-docker build -t eu.gcr.io/kernel-prod/$DRONE_REPO_NAME:$DRONE_COMMIT_SHA .
+IMAGE_PREFIX=eu.gcr.io/kernel-prod
 
-echo Pushing eu.gcr.io/kernel-prod/$DRONE_REPO_NAME:$DRONE_COMMIT_SHA ...
-docker push eu.gcr.io/kernel-prod/$DRONE_REPO_NAME:$DRONE_COMMIT_SHA
+if [ -z "$PLUGIN_FLAVOR" ]; then
+    IMAGE_NAME=$DRONE_REPO_NAME
+else
+    IMAGE_NAME=$DRONE_REPO_NAME/$PLUGIN_FLAVOR
+fi
+
+if [ -z "$PLUGIN_DOCKERFILE" ]; then
+    PLUGIN_DOCKERFILE=Dockerfile
+fi
+
+IMAGE=$IMAGE_PREFIX/$IMAGE_NAME
+
+echo Building...
+docker build -t $IMAGE:$DRONE_COMMIT_SHA -f $PLUGIN_DOCKERFILE .
+
+echo Pushing $IMAGE:$DRONE_COMMIT_SHA ...
+docker push $IMAGE:$DRONE_COMMIT_SHA
 
 if [ "$PLUGIN_TAG_LATEST" = true ] ; then
-    echo Pushing eu.gcr.io/kernel-prod/$DRONE_REPO_NAME:latest ...
-    docker tag eu.gcr.io/kernel-prod/$DRONE_REPO_NAME:$DRONE_COMMIT_SHA eu.gcr.io/kernel-prod/$DRONE_REPO_NAME:latest
-    docker push eu.gcr.io/kernel-prod/$DRONE_REPO_NAME:latest
+    echo Pushing $IMAGE:latest ...
+    docker tag $IMAGE:$DRONE_COMMIT_SHA $IMAGE:latest
+    docker push $IMAGE:latest
 fi
