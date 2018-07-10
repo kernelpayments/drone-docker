@@ -31,8 +31,10 @@ IMAGE_PREFIX=eu.gcr.io/kernel-prod
 
 if [ -z "$PLUGIN_FLAVOR" ]; then
     IMAGE_NAME=$DRONE_REPO_NAME
+    BUILD_ARGS=""
 else
     IMAGE_NAME=$DRONE_REPO_NAME/$PLUGIN_FLAVOR
+    BUILD_ARGS="--build-arg FLAVOR=$PLUGIN_FLAVOR"
 fi
 
 if [ -z "$PLUGIN_DOCKERFILE" ]; then
@@ -42,7 +44,7 @@ fi
 IMAGE=$IMAGE_PREFIX/$IMAGE_NAME
 
 echo Building...
-docker build -t $IMAGE:$DRONE_COMMIT_SHA -f $PLUGIN_DOCKERFILE .
+docker build -t $IMAGE:$DRONE_COMMIT_SHA -f $PLUGIN_DOCKERFILE $BUILD_ARGS .
 
 echo Pushing $IMAGE:$DRONE_COMMIT_SHA ...
 docker push $IMAGE:$DRONE_COMMIT_SHA
