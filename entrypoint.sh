@@ -27,7 +27,10 @@ cat > ~/.docker/config.json <<EOF
 }
 EOF
 
-IMAGE_PREFIX=eu.gcr.io/kernel-prod
+if [ -z "$PLUGIN_PREFIX" ]; then
+    echo "Missing argument prefix"
+    exit 1
+fi
 
 if [ -z "$PLUGIN_FLAVOR" ]; then
     IMAGE_NAME=$DRONE_REPO_NAME
@@ -37,11 +40,17 @@ else
     BUILD_ARGS="--build-arg FLAVOR=$PLUGIN_FLAVOR"
 fi
 
+if [ -z "$PLUGIN_DIR" ]; then
+    PLUGIN_DIR=.
+fi
+
 if [ -z "$PLUGIN_DOCKERFILE" ]; then
     PLUGIN_DOCKERFILE=Dockerfile
 fi
 
-IMAGE=$IMAGE_PREFIX/$IMAGE_NAME
+cd $PLUGIN_DIR
+
+IMAGE=$PLUGIN_PREFIX/$IMAGE_NAME
 
 echo Building...
 docker build -t $IMAGE:$DRONE_COMMIT_SHA -f $PLUGIN_DOCKERFILE $BUILD_ARGS .
