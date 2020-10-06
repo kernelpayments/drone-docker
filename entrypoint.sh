@@ -51,18 +51,15 @@ fi
 cd $PLUGIN_DIR
 
 IMAGE=$PLUGIN_PREFIX/$IMAGE_NAME
-NOW=$(date +"%Y.%m.%d.%Hh%M")
-
-IMAGE_TAG=$NOW.$DRONE_COMMIT_SHA
 
 echo Building...
-docker build -t $IMAGE:$IMAGE_TAG -f $PLUGIN_DOCKERFILE $BUILD_ARGS .
+docker build -t $IMAGE:$DRONE_COMMIT_SHA -f $PLUGIN_DOCKERFILE $BUILD_ARGS .
 
-echo Pushing $IMAGE:$IMAGE_TAG ...
-docker push $IMAGE:$IMAGE_TAG
+echo Pushing $IMAGE:$DRONE_COMMIT_SHA ...
+docker push $IMAGE:$DRONE_COMMIT_SHA
 
 if [ "$PLUGIN_TAG_LATEST" = true ] ; then
     echo Pushing $IMAGE:latest ...
-    docker tag $IMAGE:$IMAGE_TAG $IMAGE:latest
+    docker tag $IMAGE:$DRONE_COMMIT_SHA $IMAGE:latest
     docker push $IMAGE:latest
 fi
